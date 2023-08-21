@@ -1,0 +1,55 @@
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+
+class TelnetSimulator
+{
+    static void Main(string[] args)
+    {
+        TcpListener server = null;
+
+        try
+        {
+            // Definir o endereço IP e a porta para o servidor Telnet
+            IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+            int port = 23;
+
+            // Iniciar o servidor TCP
+            server = new TcpListener(ipAddress, port);
+            server.Start();
+
+            Console.WriteLine("Servidor Telnet simulado iniciado...");
+
+            while (true)
+            {
+                Console.WriteLine("Aguardando conexão de cliente...");
+
+                // Aceitar a conexão do cliente
+                TcpClient client = server.AcceptTcpClient();
+                Console.WriteLine("Cliente conectado!");
+
+                // Obter o fluxo de rede para leitura e escrita
+                NetworkStream stream = client.GetStream();
+
+                // Enviar o código para o cliente
+                string codeToSend = "123456TesteBackEnd";
+                byte[] codeBytes = Encoding.ASCII.GetBytes(codeToSend);
+                stream.Write(codeBytes, 0, codeBytes.Length);
+
+                // Fechar a conexão com o cliente
+                stream.Close();
+                client.Close();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Erro: " + e.Message);
+        }
+        finally
+        {
+            // Parar o servidor TCP
+            server.Stop();
+        }
+    }
+}
+
